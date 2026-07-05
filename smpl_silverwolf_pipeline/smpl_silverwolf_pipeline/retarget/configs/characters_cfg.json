@@ -1,0 +1,19 @@
+{
+    "Characters": {
+        "SMPLX-lh-neutral": {
+            "character_name": "SMPLX-lh-neutral",
+            "root_skeleton": "SMPLX-lh-neutral",
+            "mesh_names": ["SMPLX-mesh-neutral"]
+        },
+        "silver_wolf": {
+            "character_name": "silver_wolf",
+            "root_skeleton": "silver_wolf_lv999_arm",
+            "mesh_names": ["silver_wolf_lv999_mesh"],
+            "post_fix": {"bone": "全ての親", "rotation": [0, 0, 0]}
+        }
+    },
+    "asset_path": {
+        "skel_templates_root": "data/templates",
+        "animation_data_root": "data/datasets"
+    }
+}

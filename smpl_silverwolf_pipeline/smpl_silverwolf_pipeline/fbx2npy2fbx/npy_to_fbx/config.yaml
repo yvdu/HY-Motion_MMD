@@ -1,0 +1,24 @@
+# 输入可以是单个 .npy/.npz 文件，也可以是包含 .npy/.npz 的文件夹
+input_path: "./output_npy"
+
+# 输出 .fbx 的根目录
+output_dir: "./output_fbx"
+
+# 是否递归处理子文件夹
+recursive: true
+
+# 输入是文件夹时，是否在输出目录中保留相对子目录结构
+preserve_subdirs: true
+
+# 输出已存在时是否覆盖
+overwrite: false
+
+# 单个模板 FBX；当所有 motion 都写回同一个骨架模板时使用
+template_fbx: "./templates/body_check_001__A296.fbx"
+
+# 模板目录；不为空时优先按输入相对路径寻找同名 .fbx 模板
+# 例如输入 a/b/motion.npy，会优先寻找 template_dir/a/b/motion.fbx
+template_dir: null
+
+# 并行进程数；1 表示单进程，建议调试时使用 1
+workers: 1

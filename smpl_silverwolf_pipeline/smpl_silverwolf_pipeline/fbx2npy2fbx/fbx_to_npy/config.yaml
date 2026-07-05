@@ -1,0 +1,26 @@
+# 输入可以是单个 .fbx 文件，也可以是包含 .fbx 的文件夹
+input_path: "./input_fbx"
+
+# 输出 .npy 的根目录
+output_dir: "./output_npy"
+
+# 是否递归处理子文件夹
+recursive: true
+
+# 输入是文件夹时，是否在输出目录中保留相对子目录结构
+preserve_subdirs: true
+
+# 输出已存在时是否覆盖
+overwrite: false
+
+# 帧率覆盖；设为 null 表示使用 FBX 文件中的帧率
+fps_override: null
+
+# 并行进程数；设为 auto 或 0 表示自动选择，建议大批量转换使用 auto
+workers: auto
+
+# 并行任务分块大小；文件很多时可以减少进程调度开销
+chunksize: 4
+
+# 每处理多少个文件打印一次进度
+progress_interval: 50

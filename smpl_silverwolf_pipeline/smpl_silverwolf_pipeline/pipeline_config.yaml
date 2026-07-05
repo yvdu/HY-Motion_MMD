@@ -1,0 +1,73 @@
+# ============================================================================
+#  HY-Motion -> 银狼(silver_wolf) -> VMD 一体化 pipeline 配置
+#
+#  完整链路:
+#    [0] HY-Motion 文本生成动作  ->  .npz (SMPL/SMPLX 动作)
+#    [1] .npz/.npy               ->  SMPL ASCII FBX           (纯 Python, 任意帧数)
+#    [2] SMPL FBX                ->  银狼 ASCII FBX            (MotionBuilder / mobupy)
+#    [3] 银狼 ASCII FBX          ->  银狼 二进制 FBX           (MotionBuilder / mobupy)
+#    [4] 银狼 二进制 FBX         ->  银狼 .vmd                 (Blender + mmd_tools)
+#
+#  路径可用绝对路径，或相对“本仓库根目录”(F:/HY-Motion-1.0-master)的相对路径。
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# 外部可执行文件（请改成你机器上的真实路径）
+# ----------------------------------------------------------------------------
+executables:
+  # 跑 HY-Motion / 纯 Python 阶段用的 Python 解释器
+  python: "C:/Users/tiezheng.cao/.conda/envs/hymotion-mmd/python.exe"
+  # Autodesk MotionBuilder 的 mobupy.exe（阶段 2、3 需要）
+  mobupy: "C:/Program Files/Autodesk/MotionBuilder 2027/bin/x64/mobupy.exe"
+  # Blender 可执行文件（阶段 4 / 视频渲染需要，须已安装 mmd_tools 插件）
+  blender: "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe"
+  # MikuMikuDance（pipeline 完成后启动，便于手动预览）
+  mmd: "C:/Program Files/MikuMikuDanceE_v932x64/MikuMikuDance.exe"
+
+# ----------------------------------------------------------------------------
+# 工作目录：各阶段产物分别落到下面的子目录里
+# ----------------------------------------------------------------------------
+work_dir: "smpl_silverwolf_pipeline/smpl_silverwolf_pipeline/output_pipeline"
+dirs:
+  npz:          "00_npz"            # 阶段0 产出 / 阶段1 输入（SMPL 动作 .npz/.npy）
+  smpl_fbx:     "01_smpl_fbx"       # 阶段1 产出（SMPL ASCII FBX）
+  retarget_fbx: "02_silverwolf_fbx" # 阶段2 产出（银狼 ASCII FBX）
+  binary_fbx:   "03_silverwolf_bin" # 阶段3 产出（银狼 二进制 FBX）
+  vmd:          "04_vmd"            # 阶段4 产出（银狼 .vmd）
+
+# ----------------------------------------------------------------------------
+# [阶段 0] HY-Motion 文本 -> 动作（可选）
+#   关闭时(enabled: false)，直接把已有的 .npz/.npy 放进 work_dir/00_npz 即可。
+# ----------------------------------------------------------------------------
+hymotion:
+  enabled: true
+  model_path: "ckpts/tencent/HY-Motion-1.0"     # 模型权重目录（含 config.yml / latest.ckpt）
+  input_text_dir: "examples/example_prompts/cpu_run"  # 提示词目录（.txt/.json）
+  device_ids: null                               # 例如 "0" 或 "0,1"；null = 全部可用 GPU
+  num_seeds: 1                                    # 每条提示词生成的随机种子数
+  cfg_scale: 5.0
+  validation_steps: 20                           # CPU 推理时减少步数以加快速度；null = 用模型默认
+  disable_rewrite: true                          # 无 prompt-engineering 服务时必须 true
+  disable_duration_est: true                     # 无 prompt-engineering 服务时必须 true
+
+# ----------------------------------------------------------------------------
+# [阶段 1] .npz/.npy -> SMPL ASCII FBX
+#   使用 fbx2npy2fbx/npy_to_fbx/run_reframe.py（支持任意帧数）。
+# ----------------------------------------------------------------------------
+npy_to_fbx:
+  template_fbx: "smpl_silverwolf_pipeline/smpl_silverwolf_pipeline/fbx2npy2fbx/templates/body_check_001__A296.fbx"
+  overwrite: true
+
+# ----------------------------------------------------------------------------
+# [阶段 2] SMPL FBX -> 银狼 FBX（重定向）
+# ----------------------------------------------------------------------------
+retarget:
+  source: "SMPLX-lh-neutral"
+  target: "silver_wolf"
+
+# ----------------------------------------------------------------------------
+# [阶段 4] 银狼 FBX -> VMD
+# ----------------------------------------------------------------------------
+vmd:
+  pmx_model: "smpl_silverwolf_pipeline/smpl_silverwolf_pipeline/mmd/model/silver_wolf_lv999.pmx"
+  ref_vmd: null    # 可选：参考 VMD，用于继承插值曲线；null = 线性默认

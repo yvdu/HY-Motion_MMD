@@ -1,0 +1,6 @@
+A person walks forward slowly.
+A person walks forward slowly while looking around.
+A person performs a squat, then pushes a barbell overhead using the power from standing up.
+A person climbs upward, moving up the slope.
+A person stands up from the chair, then stretches their arms.
+A person walks unsteadily, then slowly sits down.

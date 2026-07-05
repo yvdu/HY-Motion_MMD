@@ -1,0 +1,47 @@
+# ---- Python ----
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyz
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+
+# ---- 模型权重（请用 scripts/download_models.ps1 下载到 ckpts/） ----
+ckpts/*
+!ckpts/README.md
+
+# 离线卸载缓存（Qwen3 CPU 推理用）
+ckpts/.offload_qwen3/
+
+# ---- 运行产物 ----
+output/
+output_pipeline/
+smpl_silverwolf_pipeline/smpl_silverwolf_pipeline/output_pipeline/
+
+# HY-Motion / pipeline 生成的中间产物（不提交）
+*.npz
+*.npy
+
+# 注意：FBX 文件需要分情况：
+#   - 资产型 FBX（银狼模型 / SMPL 模板 / HIK std 模板）必须提交
+#   - pipeline 运行时生成的 FBX 不提交（落在 output_pipeline/ 下已被忽略）
+# 因此 *.fbx 不全局忽略。
+
+# 注意：保留示例 VMD 与银狼 PMX 模型，故 *.vmd / *.pmx 不忽略
+
+# ---- 编辑器 / 系统 ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+debug
+tencent/
+
+# ---- 日志 / 临时 ----
+*.log
+*.tmp
+cache_config.json
+.cache/
