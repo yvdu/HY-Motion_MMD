@@ -1,6 +1,6 @@
 <div align="center">
 
-# HY-Motion-MMD：文本生成 MMD 动作（VMD）的完整 Pipeline
+# HY-Motion-MMD：文本生成 MMD 动作（VMD）
 
 从一句英文文本，端到端生成可在 MikuMikuDance 中直接加载的 `.vmd` 动作文件。
 
@@ -28,7 +28,7 @@
 
 ## 1. 项目简介
 
-**HY-Motion-MMD** 把腾讯混元 **HY-Motion 1.0** 文生 3D 动作大模型与一套 **SMPL → MMD 角色重定向 / VMD 导出工具链** 串联起来，让你只需要输入一句文本（如 *A person walks forward slowly.*），就能自动得到一个可在 MMD 中加载到 PMX 模型上播放的 `.vmd` 动作文件。
+**HY-Motion-MMD** 把腾讯混元 **HY-Motion 1.0** 文生 3D 动作大模型与一套 **SMPL → MMD 角色重定向 / VMD 导出工具链** 串联起来，只需要输入一句文本（如 *A person walks forward slowly.*），就能自动得到一个可在 MMD 中加载到 PMX 模型上播放的 `.vmd` 动作文件。
 
 - **文本→动作**：HY-Motion 1.0（DiT + Flow Matching，1.0B 参数）
 - **动作→MMD VMD**：SMPL FBX 转换 + MotionBuilder HIK 重定向 + Blender mmd_tools 导出
