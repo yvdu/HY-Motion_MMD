@@ -1,10 +1,10 @@
 <div align="center">
 
-# HY-Motion-MMD：文本生成 MMD 银狼动作的完整 Pipeline
+# HY-Motion-MMD：文本生成 MMD 动作（VMD）的完整 Pipeline
 
-从一句英文文本，端到端生成可在 MikuMikuDance 中直接加载的银狼（Silver Wolf LV.999）`.vmd` 动作文件。
+从一句英文文本，端到端生成可在 MikuMikuDance 中直接加载的 `.vmd` 动作文件。
 
-基于 [Tencent Hunyuan HY-Motion 1.0](https://github.com/Tencent-Hunyuan/HY-Motion-1.0) 文生动作大模型 + 自研 SMPL↔银狼重定向工具链。
+基于 [Tencent Hunyuan HY-Motion 1.0](https://github.com/Tencent-Hunyuan/HY-Motion-1.0) 文生动作大模型 + 自研 SMPL→MMD 角色重定向与 VMD 导出工具链。
 
 </div>
 
@@ -21,17 +21,20 @@
 - [7. 运行方式详解](#7-运行方式详解)
 - [8. 输出说明](#8-输出说明)
 - [9. 常见问题](#9-常见问题)
-- [10. 致谢与引用](#10-致谢与引用)
+- [10. 版权说明](#10-版权说明)
+- [11. 致谢与引用](#11-致谢与引用)
 
 ---
 
 ## 1. 项目简介
 
-**HY-Motion-MMD** 把腾讯混元 **HY-Motion 1.0** 文生 3D 动作大模型与一套 **SMPL ↔ 银狼(silver_wolf) 重定向 / MMD 工具链** 串联起来，让你只需要输入一句文本（如 *A person walks forward slowly.*），就能自动得到一个能直接在 MMD 中加载到银狼模型上播放的 `.vmd` 动作文件。
+**HY-Motion-MMD** 把腾讯混元 **HY-Motion 1.0** 文生 3D 动作大模型与一套 **SMPL → MMD 角色重定向 / VMD 导出工具链** 串联起来，让你只需要输入一句文本（如 *A person walks forward slowly.*），就能自动得到一个可在 MMD 中加载到 PMX 模型上播放的 `.vmd` 动作文件。
 
 - **文本→动作**：HY-Motion 1.0（DiT + Flow Matching，1.0B 参数）
-- **动作→银狼 VMD**：SMPL FBX 转换 + MotionBuilder HIK 重定向 + Blender mmd_tools 导出
-- **附带资产**：银狼 LV.999 PMX 模型 + 贴图、SMPL 模板 FBX、HIK 角色化模板
+- **动作→MMD VMD**：SMPL FBX 转换 + MotionBuilder HIK 重定向 + Blender mmd_tools 导出
+- **附带资产**：示例 PMX 模型与贴图、SMPL 模板 FBX、HIK 角色化模板（见 [版权说明](#10-版权说明)）
+
+Pipeline 设计为**通用 MMD 工作流**：Stage 2 的重定向目标角色可在 `retarget/configs/characters_cfg.json` 中配置；仓库内默认附带一套示例角色资产用于演示全流程。
 
 支持 macOS / Windows / Linux，CPU 也可运行（慢，需 15GB+ 内存加载 Qwen3-8B）。
 
@@ -55,24 +58,24 @@
                               │
                               ▼
  ┌────────────────────────────────────────────────────────────────────────┐
- │  Stage 2  SMPL .fbx ──(mobupy + HIK)──▶  银狼 ASCII .fbx              │
+ │  Stage 2  SMPL .fbx ──(mobupy + HIK)──▶  目标角色 ASCII .fbx          │
  │            运行环境: Autodesk MotionBuilder 的 mobupy.exe               │
  └────────────────────────────────────────────────────────────────────────┘
                               │
                               ▼
  ┌────────────────────────────────────────────────────────────────────────┐
- │  Stage 3  银狼 ASCII .fbx ──(mobupy)──▶  银狼 二进制 .fbx              │
+ │  Stage 3  角色 ASCII .fbx ──(mobupy)──▶  角色 二进制 .fbx              │
  │            (Blender 不能读 ASCII FBX，需先转二进制)                      │
  └────────────────────────────────────────────────────────────────────────┘
                               │
                               ▼
  ┌────────────────────────────────────────────────────────────────────────┐
- │  Stage 4  银狼 二进制 .fbx ──(Blender + mmd_tools)──▶  银狼 .vmd       │
+ │  Stage 4  角色 二进制 .fbx ──(Blender + mmd_tools)──▶  .vmd            │
  │            含尺度/接地修正，确保站立正确                                  │
  └────────────────────────────────────────────────────────────────────────┘
                               │
                               ▼
-        在 MMD 里加载 silver_wolf_lv999.pmx + 导出的 .vmd 即可播放
+        在 MMD 里加载对应 PMX 模型 + 导出的 .vmd 即可播放
 ```
 
 各阶段互相独立，通过子进程串联，可以单独运行某阶段调试（见 [运行方式详解](#7-运行方式详解)）。
@@ -82,7 +85,7 @@
 ## 3. 目录结构
 
 ```
-ALL_DATA/
+HY-Motion_MMD/
 ├── README.md                          ← 本文件
 ├── README_HY_Motion_en.md             ← HY-Motion 官方 README（英文）
 ├── README_HY_Motion_zh_cn.md          ← HY-Motion 官方 README（中文）
@@ -122,30 +125,30 @@ ALL_DATA/
 │   ├── run_walk_forward_slowly.py     ← ★ 单条 prompt 全流程示例
 │   └── web_job_worker.py              ← app.py 的工作子进程
 │
-├── smpl_silverwolf_pipeline/          ← SMPL ↔ 银狼 重定向 / MMD 工具包
+├── smpl_silverwolf_pipeline/          ← SMPL → MMD 重定向 / VMD 工具包
 │   └── smpl_silverwolf_pipeline/
 │       ├── README.md                  ←   详细工具包说明
 │       ├── requirements.txt           ←   numpy / PyYAML
 │       ├── run_pipeline.py            ← ★ 一体化编排器（Stage 1~4）
 │       ├── pipeline_config.yaml       ← ★ 配置：可执行文件路径 / 各阶段参数
 │       ├── fbx2npy2fbx/               ←   npy ↔ fbx 互转（含 SMPL 模板 FBX）
-│       ├── retarget/                  ←   SMPL ↔ 银狼 重定向（mobupy）
+│       ├── retarget/                  ←   SMPL ↔ MMD 角色 重定向（mobupy）
 │       │   ├── retarget.py
 │       │   ├── mobu_retareting.py
 │       │   ├── configs/characters_cfg.json
 │       │   └── data/templates/
 │       │       ├── SMPLX-lh-neutral/std.fbx
-│       │       └── silver_wolf/std.fbx
+│       │       └── silver_wolf/std.fbx   ← 默认示例角色 HIK 模板
 │       └── mmd/                       ←   MMD 模型与脚本（Blender + mmd_tools）
 │           ├── fbx_to_vmd_custom.py    ←   ★ FBX → VMD 高保真导出
 │           ├── fbx_ascii_to_binary.py
 │           ├── pmx_to_fbx.py
 │           ├── make_silver_wolf_template.py
 │           ├── mmd_tools.zip           ←   开源 Blender 插件
-│           └── model/                  ←   ★ 银狼模型资产
-│               ├── silver_wolf_lv999.pmx   ★ 银狼 PMX 模型
+│           └── model/                  ←   示例 PMX 模型资产（见版权说明）
+│               ├── silver_wolf_lv999.pmx
 │               ├── silver_wolf_lv999.fbx
-│               └── *.png / *.bmp / *.tga    贴图
+│               └── *.png / *.bmp / *.tga
 │
 ├── ckpts/                             ← 模型权重（需自行下载，见 §5）
 │   └── README.md                      ←   下载说明
@@ -240,7 +243,7 @@ winget install Gyan.FFmpeg
 |------|---------|------|------|
 | HY-Motion-1.0     | `tencent/HY-Motion-1.0` (子目录 `HY-Motion-1.0/`) | ~4 GB  | 主文生动作 DiT |
 | CLIP-Large        | `openai/clip-vit-large-patch14`                  | ~1.7 GB| 文本编码器（必装） |
-| Qwen3-8B          | `Qwen/Qwen3-8B`                                  | ~16 GB | 高级文本编码器（可选） |
+| Qwen3-8B          | `Qwen/Qwen3-8B`                                  | ~16 GB | 高级文本编码器（必需） |
 
 ### Windows
 
@@ -299,7 +302,7 @@ python app.py
 
 ### 7.1 命令行：单条 prompt 全流程
 
-`scripts/run_walk_forward_slowly.py` 是一个最小示例，直接跑出 `walk_forward_slowly.vmd`：
+`scripts/run_walk_forward_slowly.py` 是一个最小示例，直接跑出 `.vmd` 动作文件：
 
 ```powershell
 conda activate hymotion-mmd
@@ -319,7 +322,7 @@ python scripts/run_full_qwen_batch.py
 
 ### 7.3 HY-Motion 官方批量推理
 
-仅跑 Stage 0（文本→SMPL npz），不做银狼重定向：
+仅跑 Stage 0（文本→SMPL npz），不做 MMD 重定向：
 
 ```powershell
 python local_infer.py --model_path ckpts/tencent/HY-Motion-1.0 `
@@ -342,7 +345,7 @@ python run_pipeline.py --stages 1,2,3,4
 ### 7.5 单独跑某阶段（调试）
 
 ```powershell
-python run_pipeline.py --stages 2      # 只跑 SMPL→银狼 重定向
+python run_pipeline.py --stages 2      # 只跑 SMPL→角色 重定向
 python run_pipeline.py --stages 4      # 只跑 FBX→VMD
 python run_pipeline.py --stages all    # 全跑
 ```
@@ -353,7 +356,13 @@ python run_pipeline.py --stages all    # 全跑
 python gradio_app.py
 ```
 
-只展示 HY-Motion 文本→动作的可视化，不包含银狼重定向和 VMD 导出。
+只展示 HY-Motion 文本→动作的可视化，不包含 MMD 重定向和 VMD 导出。
+
+### 7.7 更换目标 MMD 角色
+
+1. 在 `retarget/configs/characters_cfg.json` 中注册新角色（HIK 模板、骨骼映射等）
+2. 修改 `pipeline_config.yaml` 中 `retarget.target` 与 `vmd.pmx_model` 指向新角色
+3. 重新跑 Stage 2~4
 
 ---
 
@@ -365,9 +374,9 @@ python gradio_app.py
 output_pipeline/
 ├── 00_npz/             Stage 0 产出：SMPL .npz
 ├── 01_smpl_fbx/        Stage 1 产出：SMPL ASCII .fbx
-├── 02_silverwolf_fbx/  Stage 2 产出：银狼 ASCII .fbx
-├── 03_silverwolf_bin/  Stage 3 产出：银狼 二进制 .fbx
-└── 04_vmd/             Stage 4 产出：银狼 .vmd ★ 最终产物
+├── 02_silverwolf_fbx/  Stage 2 产出：目标角色 ASCII .fbx
+├── 03_silverwolf_bin/  Stage 3 产出：目标角色 二进制 .fbx
+└── 04_vmd/             Stage 4 产出：.vmd ★ 最终产物
 ```
 
 `app.py` 还会在 `output/web_videos/<job_id>.mp4` 放渲染视频。
@@ -377,7 +386,7 @@ output_pipeline/
 ### 在 MMD 中播放
 
 1. 打开 MikuMikuDance
-2. 文件 → 加载模型 → `smpl_silverwolf_pipeline/smpl_silverwolf_pipeline/mmd/model/silver_wolf_lv999.pmx`
+2. 文件 → 加载模型 → 对应 PMX 模型（默认示例见 `mmd/model/silver_wolf_lv999.pmx`）
 3. 文件 → 加载动作 → 上一步生成的 `.vmd`
 4. 播放
 
@@ -398,7 +407,7 @@ A：编辑 `smpl_silverwolf_pipeline/smpl_silverwolf_pipeline/pipeline_config.ya
 A：Blender → Preferences → Add-ons → Install → 选 `mmd/mmd_tools.zip` 并启用。
 
 ### Q5：Stage 4 报「找不到 PMX 模型」？
-A：确认 `pipeline_config.yaml` 里 `vmd.pmx_model` 指向的 PMX 文件存在（默认 `smpl_silverwolf_pipeline/smpl_silverwolf_pipeline/mmd/model/silver_wolf_lv999.pmx`）。
+A：确认 `pipeline_config.yaml` 里 `vmd.pmx_model` 指向的 PMX 文件存在。
 
 ### Q6：生成的 VMD 在 MMD 里人物漂浮 / 沉地下？
 A：`fbx_to_vmd_custom.py` 已经做了接地（grounding）修正。如果还有问题，可运行 `mmd/verify_standing.py` 校验，或检查源 `.npz` 是否存在异常根位移。
@@ -408,7 +417,19 @@ A：**不要**。`.gitignore` 已默认忽略 `ckpts/` 下所有权重。请用 
 
 ---
 
-## 10. 致谢与引用
+## 10. 版权说明
+
+仓库内附带的示例 MMD 角色模型 **Silver Wolf LV.999**（`silver_wolf_lv999.pmx` 及相关贴图、FBX 文件）的版权归 **miHoYo**（米哈游）所有。
+
+该模型文件下载自：[崩坏：星穹铁道版本激励计划](https://www.bilibili.com/blackboard/era/5fZBAcFlCEz8DxWr.html)
+
+**本项目与 miHoYo 无任何官方关联**，模型资产仅作为 pipeline 演示与测试用途随仓库提供。使用者请遵守 miHoYo 及原发布渠道的相关使用条款，不得将模型用于任何商业用途或违反版权方的行为。
+
+如需替换为自己的 MMD 角色，请参考 [§7.7 更换目标 MMD 角色](#77-更换目标-mmd-角色)，自行准备合法授权的 PMX 模型与 HIK 重定向模板。
+
+---
+
+## 11. 致谢与引用
 
 本项目基于以下开源工作：
 
