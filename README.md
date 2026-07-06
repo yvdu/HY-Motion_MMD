@@ -13,7 +13,7 @@
 **Prompt:** *A person walks forward slowly while looking around*
 
 <div align="center">
-<video src="https://github.com/yvdu/HY-Motion_MMD/raw/main/assets/demo_walk_around.mp4" controls width="720"></video>
+<img src="assets/demo_walk_around.gif" alt="Demo: A person walks forward slowly while looking around" width="640">
 </div>
 
 ---
