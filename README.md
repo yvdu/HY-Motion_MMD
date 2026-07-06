@@ -8,10 +8,19 @@
 
 </div>
 
+## 效果演示
+
+**Prompt:** *A person walks forward slowly while looking around*
+
+<div align="center">
+<video src="https://github.com/yvdu/HY-Motion_MMD/raw/main/assets/demo_walk_around.mp4" controls width="720"></video>
+</div>
+
 ---
 
 ## 目录
 
+- [效果演示](#效果演示)
 - [1. 项目简介](#1-项目简介)
 - [2. 整体流程](#2-整体流程)
 - [3. 目录结构](#3-目录结构)
