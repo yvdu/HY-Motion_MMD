@@ -399,34 +399,7 @@ output_pipeline/
 3. 文件 → 加载动作 → 上一步生成的 `.vmd`
 4. 播放
 
----
-
-## 9. 常见问题
-
-### Q1：CPU 推理太慢？
-A：HY-Motion 1.0 官方约需 26GB 显存。CPU 模式 20 步扩散 + Qwen3 编码大约 5–30 分钟一条 prompt。如果有 ≥30GB 显存的 NVIDIA GPU，把 `app.py` 里的 `HY_MOTION_DEVICE` 改成 `cuda` 即可。
-
-### Q2：进程跑到一半被系统杀掉，没有报错？
-A：典型是 Windows OOM。加载 Qwen3-8B 约需 15GB+ 内存。请关闭其它占内存程序，或换更大内存的机器。
-
-### Q3：Stage 2 报「找不到 mobupy」？
-A：编辑 `smpl_silverwolf_pipeline/smpl_silverwolf_pipeline/pipeline_config.yaml`，把 `executables.mobupy` 指向你机器上的 `mobupy.exe` 实际路径。
-
-### Q4：Stage 4 报「mmd_tools 未安装」？
-A：Blender → Preferences → Add-ons → Install → 选 `mmd/mmd_tools.zip` 并启用。
-
-### Q5：Stage 4 报「找不到 PMX 模型」？
-A：确认 `pipeline_config.yaml` 里 `vmd.pmx_model` 指向的 PMX 文件存在。
-
-### Q6：生成的 VMD 在 MMD 里人物漂浮 / 沉地下？
-A：`fbx_to_vmd_custom.py` 已经做了接地（grounding）修正。如果还有问题，可运行 `mmd/verify_standing.py` 校验，或检查源 `.npz` 是否存在异常根位移。
-
-### Q7：GitHub 仓库要不要把 ckpts/ 提交上去？
-A：**不要**。`.gitignore` 已默认忽略 `ckpts/` 下所有权重。请用 `scripts/download_models.*` 下载。仓库内 LFS 只用于 PMX/FBX/VMD/贴图等项目资产。
-
----
-
-## 10. 版权说明
+## 9. 版权说明
 
 仓库内附带的示例 MMD 角色模型 **Silver Wolf LV.999**（`silver_wolf_lv999.pmx` 及相关贴图、FBX 文件）的版权归 **miHoYo**（米哈游）所有。
 
@@ -438,7 +411,7 @@ A：**不要**。`.gitignore` 已默认忽略 `ckpts/` 下所有权重。请用 
 
 ---
 
-## 11. 致谢与引用
+## 10. 致谢与引用
 
 本项目基于以下开源工作：
 
