@@ -394,6 +394,10 @@ output_pipeline/
 
 ### 在 MMD 中播放
 
+**最简方式（推荐）：** 把 PMX 模型文件和生成的 `.vmd` 动作文件一起选中，直接拖入 MikuMikuDance 窗口，即可直接渲染出模型的动作，无需逐项从菜单加载。
+
+或通过菜单手动加载：
+
 1. 打开 MikuMikuDance
 2. 文件 → 加载模型 → 对应 PMX 模型（默认示例见 `mmd/model/silver_wolf_lv999.pmx`）
 3. 文件 → 加载动作 → 上一步生成的 `.vmd`
